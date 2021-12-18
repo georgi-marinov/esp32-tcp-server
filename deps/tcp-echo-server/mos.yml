@@ -1,0 +1,23 @@
+author: Georgi Marinov <gmtyrnovo@gmail.com>
+type: lib
+description: TCP Echo server
+version: 1.0
+
+sources:
+  - src
+
+includes:
+  - include  
+
+config_schema:
+  - ["tcp", "o", {title: "TCP Server"}]
+  - ["tcp.listen_address", "s", "11122", {title: "Listening port/address"}]
+  - ["tcp.max_conn", "i", 5, {title: "Max active connections"}]
+
+init_after:
+  - wifi
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/rpc-common
+
+manifest_version: 2017-09-29

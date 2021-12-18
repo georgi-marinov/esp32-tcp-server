@@ -1,5 +1,75 @@
-<html>
-<body>
-  <h1>Welcome to the empty project</h1>
-</body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  </head>
+  <body>
+    <h1>Demo TCP Echo server</h1>
+    <ul>
+      <li><a href="/api/conn-count">Show active connections count</a></li>
+      <li><a href="/api/conn-slots">List active connections</a></li>
+    </ul>
+    <div id="data">
+
+    </div>
+    <script>
+      var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+    };
+
+    function tableCreate(data) {
+      var el = document.getElementById('data');
+      el.innerHTML = '';
+
+      var tbl = document.createElement('table');
+      tbl.style.width = '100%';
+      tbl.setAttribute('border', '1');
+      var thead = document.createElement('thead');
+      thead.innerHTML = '<tr><td>N</td><td>In Use</td><td>Client</td><td>In cnt</td><td>Out cnt</td></tr>';
+
+      var tbdy = document.createElement('tbody');
+      var obj;
+      var total_con = 0;
+      for (var i = 0; i < data.length; i++) {
+        obj = data[i];
+        if(obj.in_use){
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td>'+(total_con+1)+'</td><td>'+obj.in_use+'</td><td>'+obj.client+'</td><td>'+obj.in_cnt+'</td><td>'+obj.out_cnt+'</td>';
+          tbdy.appendChild(tr);
+          total_con++;
+        } 
+      }
+      if(total_con == 0){
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5">Not active connections</td>';
+        tbdy.appendChild(tr);
+      }
+      tbl.appendChild(thead);
+      tbl.appendChild(tbdy);
+      el.appendChild(tbl)
+    }
+
+    function loadData(){
+      getJSON("/api/conn-slots", onData);
+    }
+
+    function onData(st, data){
+      if(st === null){
+        tableCreate(data);
+      }
+      setTimeout(loadData, 500);
+    }
+    loadData();
+    </script>
+  </body>
 </html>
